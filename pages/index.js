@@ -21,6 +21,28 @@ function ProfileSidebar(propriedades) {
   )
 }
 
+function ProfileRelationsBox(propriedades) {
+  return(
+    <ProfileRelationsBoxWrapper>
+            <h2 className="smallTitle">
+              {propriedades.title} ({propriedades.items.length})
+            </h2>
+            <ul>
+                {/*  {seguidores.map((itemAtual) => {
+                  return (
+                    <li key={itemAtual.id}>
+                      <a href={`/users/${itemAtual.title}`}>
+                        <img src={itemAtual.image} />
+                        <span>{itemAtual.title}</span>
+                      </a>
+                    </li>
+                  )
+                })} */}
+              </ul> 
+          </ProfileRelationsBoxWrapper>
+  )
+}
+
 export default function Home() {
   const usuarioAleatorio = 'matHeleno';
   const [comunidades, setComunidades] = React.useState([{
@@ -39,6 +61,20 @@ export default function Home() {
     'marcobrunodev',
     'felipefialho'
   ]
+
+  const [seguidores, setSeguidores] = React.useState([]);
+
+  React.useEffect(function(){
+    fetch('https://api.github.com/users/peas/followers')
+    .then(function (respostaDoServidor){
+      return respostaDoServidor.json();
+  })
+    .then(function(respostaCompleta) {
+      setSeguidores(respostaCompleta)
+    })
+  }, [])
+  
+
 
   return (
     <>
@@ -68,9 +104,9 @@ export default function Home() {
               console.log('Campo: ', dadosDoForm.get('image'));
 
               const comunidade = {
-                id: new Date().toIsoString(),
-                titulo: dadosDoForm.get('title'),
-                image: dadosDoForm.get('imagee'),
+                id: new Date().toISOString(),
+                title: dadosDoForm.get('title'),
+                image: dadosDoForm.get('image'),
               }
               const comunidadesAtualizadas = [...comunidades, comunidade];
               setComunidades(comunidadesAtualizadas)
@@ -80,7 +116,7 @@ export default function Home() {
                 <input
                   placeholder="Qual vai ser a sua comunidade?"
                   name="title"
-                  aria-aria-label="Qual vai ser a sua comunidade?"
+                  aria-label="Qual vai ser a sua comunidade?"
                   type="text"
                 />
               </div>
@@ -88,7 +124,7 @@ export default function Home() {
                 <input
                   placeholder="Coloque uma URL para usarmos de capa"
                   name="image"
-                  aria-aria-label="Coloque uma URL para usarmos de capa"
+                  aria-label="Coloque uma URL para usarmos de capa"
                 />
               </div>
               <button>
@@ -99,22 +135,25 @@ export default function Home() {
         </div>
         
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
+
+        <ProfileRelationsBox title="Seguidores" items={seguidores} />
+
         <ProfileRelationsBoxWrapper>
           <h2 className="smallTitle">
             Comunidades ({comunidades.length})
           </h2>
-          {<ul>
+          <ul>
               {comunidades.map((itemAtual) => {
                 return (
                   <li key={itemAtual.id}>
-                    <a href={`/users/${itemAtual.title}`} key={itemAtual.title}>
+                    <a href={`/users/${itemAtual.title}`}>
                       <img src={itemAtual.image} />
                       <span>{itemAtual.title}</span>
                     </a>
                   </li>
                 )
               })}
-            </ul>}
+            </ul>
         </ProfileRelationsBoxWrapper>
           
           
